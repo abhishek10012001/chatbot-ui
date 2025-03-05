@@ -1,28 +1,64 @@
 import React, { useState, useEffect } from "react";
-import { auth } from "./firebase_config";
+import { auth, db } from "./firebase_config";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import ChatWidget from "./components/chat_widget";
+import LoadingIndicator from "./components/loading_indicator";
+import { Message } from "./types/interface";
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
+  const [messages, setMessages] = useState<Message[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+
+      if (user) {
+        await fetchMessages(user.uid);
+      } else {
+        setMessages(null);
+        setLoading(false);
+      }
     });
 
     return () => unsubscribe();
   }, []);
+
+  const fetchMessages = async (userId: string) => {
+    setLoading(true);
+    const userDocRef = doc(db, "Messages", userId);
+    const docSnap = await getDoc(userDocRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+
+      const rawMessages = data.messages || data; 
+
+      const formattedMessages: Message[] = Object.entries(rawMessages).map(([timestamp, msg]: [string, any]) => ({
+        id: timestamp, 
+        text: msg.text,
+        by: msg.by,
+      }));
+
+      formattedMessages.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+
+      setMessages(formattedMessages);
+    } else {
+      setMessages([]);
+    }
+    setLoading(false);
+  };
 
   const handleAuth = async () => {
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
-      
         await createUserWithEmailAndPassword(auth, email, password);
       }
     } catch (error: any) {
@@ -33,8 +69,9 @@ const App: React.FC = () => {
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
+    setMessages(null);
+    setLoading(false);
   };
-
 
   return (
     <div
@@ -67,7 +104,11 @@ const App: React.FC = () => {
               overflow: "hidden",
             }}
           >
-            <ChatWidget userId={user.uid} />
+            {loading ? (
+              <p><LoadingIndicator /></p>
+            ) : (
+              <ChatWidget userId={user.uid} initialMessages={messages!} />
+            )}
           </div>
         </>
       ) : (

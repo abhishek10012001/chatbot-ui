@@ -1,21 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { Message } from "../types/interface";
 
 const API_BASE_URL: string = process.env.REACT_APP_API_BASE_URL!;
 const API_SECRET_KEY: string = process.env.REACT_APP_API_SECRET_KEY!;
 
-interface Message {
-  id: string;
-  text: string;
-  by: "user" | "bot";
-}
+
 
 interface ChatWidgetProps {
   userId: string;
+  initialMessages: Message[];
 }
 
-const ChatWidget: React.FC<ChatWidgetProps> = ({ userId }) => {
-  const [messages, setMessages] = useState<Message[]>([{ id: Date.now().toString(), text: "Hi I Am Ava. Ask me anything or pick a place to start", by: "bot" }]);
+const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
+    const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [editingMessage, setEditingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
