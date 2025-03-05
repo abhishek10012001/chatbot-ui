@@ -5,8 +5,6 @@ import { Message } from "../types/interface";
 const API_BASE_URL: string = process.env.REACT_APP_API_BASE_URL!;
 const API_SECRET_KEY: string = process.env.REACT_APP_API_SECRET_KEY!;
 
-
-
 interface ChatWidgetProps {
   userId: string;
   initialMessages: Message[];
