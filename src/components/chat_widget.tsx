@@ -14,7 +14,7 @@ interface ChatWidgetProps {
 }
 
 const ChatWidget: React.FC<ChatWidgetProps> = ({ userId }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([{ id: Date.now().toString(), text: "Hi I Am Ava. Ask me anything or pick a place to start", by: "bot" }]);
   const [input, setInput] = useState("");
   const [editingMessage, setEditingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -37,24 +37,46 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId }) => {
         userId,
       });
 
-      const botMessage: Message = {
-        id: response.data.botResponseId,
-        text: response.data.message,
-        by: "bot",
-      };
+      if (response.status === 200) {
+        const botMessage: Message = {
+            id: response.data.botResponseId,
+            text: response.data.message,
+            by: "bot",
+          };
+    
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === tempId ? { ...msg, id: response.data.userMessageId } : msg
+            ).concat(botMessage)
+          );
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === tempId ? { ...msg, id: response.data.userMessageId } : msg
-        ).concat(botMessage)
-      );
+          console.log(`Successfully sent message and replied by the bot`);
+      } else {
+        console.error(`An error occurred in sending message, response: ${response.data}`);
+      }
+
+      
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
   const deleteMessage = async (id: string) => {
-    setMessages((prev) => prev.filter((msg) => msg.id !== id));
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/api/v1/deleteMessage`, {
+        data: { messageId: id, userId },
+      });
+
+      if (response.status === 200) {
+        setMessages((prev) => prev.filter((msg) => msg.id !== id));
+        console.log(`Successfully deleted the message`);
+      }
+      else {
+        console.error(`An error occured in deleting the message, response: ${response.data}`);
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
   };
 
   const editMessage = async (id: string, newText: string) => {
@@ -68,13 +90,20 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId }) => {
         userId,
       });
 
-      const botResponse = response.data.message;
+      if (response.status === 200) {
+        const botResponse = response.data.message;
 
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === id ? { ...msg, text: newText } : msg
-        ).concat({ id: response.data.botResponseId, text: botResponse, by: "bot" })
-      );
+        setMessages((prev) =>
+            prev.map((msg) =>
+            msg.id === id ? { ...msg, text: newText } : msg
+            ).concat({ id: response.data.botResponseId, text: botResponse, by: "bot" })
+        );
+        console.log(`Successfully edited the message`);
+      } else {
+        console.error(`An error occurred in editing the message, response: ${response.data}`);
+      }
+
+      
     } catch (error) {
       console.error("Error editing message:", error);
     }
@@ -124,12 +153,14 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId }) => {
                 autoFocus
               />
             ) : (
-              <span style={{ padding: "8px", borderRadius: "10px", display: "inline-block", backgroundColor: msg.by === "user" ? "#dcf8c6" : "#f1f1f1", wordBreak: "break-word", maxWidth: "80%" }}>{msg.text}</span>
-            )}
-            {msg.by === "user" && (
               <>
-                <button onClick={() => setEditingMessage(msg.id)} style={{ marginLeft: "5px", fontSize: "12px", cursor: "pointer" }}>Edit</button>
-                <button onClick={() => deleteMessage(msg.id)} style={{ marginLeft: "5px", fontSize: "12px", cursor: "pointer" }}>Delete</button>
+                <span style={{ padding: "8px", borderRadius: "10px", display: "inline-block", backgroundColor: msg.by === "user" ? "#dcf8c6" : "#f1f1f1", wordBreak: "break-word", maxWidth: "80%" }}>{msg.text}</span>
+                {msg.by === "user" && (
+                  <div style={{ display: "flex", justifyContent: "right", gap: "5px", marginTop: "4px", color: "grey" }}>
+                    <button onClick={() => deleteMessage(msg.id)} style={{ fontSize: "14px", cursor: "pointer", border: "none", background: "none", color: "grey" }}>🔄</button>
+                    <button onClick={() => setEditingMessage(msg.id)} style={{ fontSize: "14px", cursor: "pointer", border: "none", background: "none", color: "grey" }}>🖋️</button>
+                  </div>
+                )}
               </>
             )}
           </div>
