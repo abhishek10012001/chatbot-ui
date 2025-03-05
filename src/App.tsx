@@ -1,7 +1,12 @@
-import React from "react";
+import ChatWidget from "./components/chat_widget";
 
-const App: React.FC = () => {
-  return <h1>Hello, Chatbot UI!</h1>;
-};
+function App() {
+  const userId = "EGgryAXLf8ce2GKmaKPR";
+  return (
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <ChatWidget userId={userId}/>
+    </div>
+  );
+}
 
 export default App;
