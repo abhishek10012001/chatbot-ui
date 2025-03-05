@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5001";
+const API_BASE_URL: string = process.env.REACT_APP_API_BASE_URL!;
+const API_SECRET_KEY: string = process.env.REACT_APP_API_SECRET_KEY!;
 
 interface Message {
   id: string;
@@ -32,10 +33,19 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId }) => {
     setInput("");
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/v1/sendMessage`, {
-        text: input,
-        userId,
-      });
+        const response = await axios.post(
+            `${API_BASE_URL}/api/v1/sendMessage`,
+            {
+              text: input,
+              userId,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": API_SECRET_KEY, 
+              },
+            }
+          );
 
       if (response.status === 200) {
         const botMessage: Message = {
@@ -63,9 +73,13 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId }) => {
 
   const deleteMessage = async (id: string) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/api/v1/deleteMessage`, {
-        data: { messageId: id, userId },
-      });
+        const response = await axios.delete(`${API_BASE_URL}/api/v1/deleteMessage`, {
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": API_SECRET_KEY,
+            },
+            data: { messageId: id, userId },
+          });
 
       if (response.status === 200) {
         setMessages((prev) => prev.filter((msg) => msg.id !== id));
@@ -84,11 +98,20 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId }) => {
     setEditingMessage(null);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/v1/editMessage`, {
-        messageId: id, 
-        newText: newText,
-        userId,
-      });
+        const response = await axios.post(
+            `${API_BASE_URL}/api/v1/editMessage`,
+            {
+              messageId: id, 
+              newText: newText,
+              userId,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": API_SECRET_KEY,
+              },
+            }
+          );
 
       if (response.status === 200) {
         const botResponse = response.data.message;
