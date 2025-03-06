@@ -183,15 +183,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: "400px",
     padding: "10px",
     backgroundColor: "white",
-    height: "500px",
+    height: "600px",
     boxSizing: "border-box",
   },
   header: {
     display: "flex",
-    alignItems: "center",
+    flexDirection: "column",  
+    alignItems: "center",     
     padding: "15px",
     borderBottom: "1px solid #eee",
     textAlign: "center",
+    gap: "20px"
   },
   avatar: {
     width: "50px",
@@ -228,6 +230,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     alignItems: "center",
     marginBottom: "10px",
+    gap: "5px"
   },
   messageBubble: {
     padding: "10px",
