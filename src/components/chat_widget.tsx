@@ -6,7 +6,7 @@ const API_BASE_URL: string = process.env.REACT_APP_API_BASE_URL!;
 const API_SECRET_KEY: string = process.env.REACT_APP_API_SECRET_KEY!;
 
 const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
-    const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [editingMessage, setEditingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -24,39 +24,23 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
     setInput("");
 
     try {
-        const response = await axios.post(
-            `${API_BASE_URL}/api/v1/sendMessage`,
-            {
-              text: input,
-              userId,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "x-api-key": API_SECRET_KEY, 
-              },
-            }
-          );
+      const response = await axios.post(
+        `${API_BASE_URL}/api/v1/sendMessage`,
+        { text: input, userId },
+        { headers: { "Content-Type": "application/json", "x-api-key": API_SECRET_KEY } }
+      );
 
       if (response.status === 200) {
         const botMessage: Message = {
-            id: response.data.botResponseId,
-            text: response.data.message,
-            by: "bot",
-          };
-    
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === tempId ? { ...msg, id: response.data.userMessageId } : msg
-            ).concat(botMessage)
-          );
+          id: response.data.botResponseId,
+          text: response.data.message,
+          by: "bot",
+        };
 
-          console.log(`Successfully sent message and replied by the bot`);
-      } else {
-        console.error(`An error occurred in sending message, response: ${response.data}`);
+        setMessages((prev) =>
+          prev.map((msg) => (msg.id === tempId ? { ...msg, id: response.data.userMessageId } : msg)).concat(botMessage)
+        );
       }
-
-      
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -64,20 +48,13 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
 
   const deleteMessage = async (id: string) => {
     try {
-        const response = await axios.delete(`${API_BASE_URL}/api/v1/deleteMessage`, {
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": API_SECRET_KEY,
-            },
-            data: { messageId: id, userId },
-          });
+      const response = await axios.delete(`${API_BASE_URL}/api/v1/deleteMessage`, {
+        headers: { "Content-Type": "application/json", "x-api-key": API_SECRET_KEY },
+        data: { messageId: id, userId },
+      });
 
       if (response.status === 200) {
         setMessages((prev) => prev.filter((msg) => msg.id !== id));
-        console.log(`Successfully deleted the message`);
-      }
-      else {
-        console.error(`An error occured in deleting the message, response: ${response.data}`);
       }
     } catch (error) {
       console.error("Error deleting message:", error);
@@ -89,35 +66,22 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
     setEditingMessage(null);
 
     try {
-        const response = await axios.post(
-            `${API_BASE_URL}/api/v1/editMessage`,
-            {
-              messageId: id, 
-              newText: newText,
-              userId,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "x-api-key": API_SECRET_KEY,
-              },
-            }
-          );
+      const response = await axios.post(
+        `${API_BASE_URL}/api/v1/editMessage`,
+        { messageId: id, newText, userId },
+        { headers: { "Content-Type": "application/json", "x-api-key": API_SECRET_KEY } }
+      );
 
       if (response.status === 200) {
         const botResponse = response.data.message;
-
         setMessages((prev) =>
-            prev.map((msg) =>
-            msg.id === id ? { ...msg, text: newText } : msg
-            ).concat({ id: response.data.botResponseId, text: botResponse, by: "bot" })
+          prev.map((msg) => (msg.id === id ? { ...msg, text: newText } : msg)).concat({
+            id: response.data.botResponseId,
+            text: botResponse,
+            by: "bot",
+          })
         );
-        console.log(`Successfully edited the message`);
-      } else {
-        console.error(`An error occurred in editing the message, response: ${response.data}`);
       }
-
-      
     } catch (error) {
       console.error("Error editing message:", error);
     }
@@ -135,75 +99,175 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
   };
 
   return (
-    <div style={{
-      display: "flex", 
-      flexDirection: "column", 
-      width: "100%", 
-      maxWidth: "400px", 
-      padding: "2px", 
-      backgroundColor: "white",
-      height: "500px",
-      position: "relative",
-      boxSizing: "border-box"
-    }}>
-      <div style={{
-        flexGrow: 1, 
-        overflowY: "auto", 
-        maxHeight: "420px", 
-        padding: "5px", 
-        borderBottom: "1px solid #ddd",
-        boxSizing: "border-box"
-      }}>
+    <div style={styles.chatContainer}>
+      <div style={styles.header}>
+        <img src="https://placehold.co/50x50" alt="Bot Avatar" style={styles.avatar} />
+        <div>
+          <h2 style={styles.title}>Hey 👋, I'm Ava</h2>
+          <p style={styles.subtitle}>Ask me anything or pick a place to start</p>
+        </div>
+      </div>
+
+      <div style={styles.messagesContainer}>
         {messages.map((msg) => (
-          <div key={msg.id} style={{ textAlign: msg.by === "user" ? "right" : "left", margin: "5px 0", position: "relative" }}>
-            {editingMessage === msg.id ? (
-              <input
-                type="text"
-                defaultValue={msg.text}
-                onBlur={(e) => editMessage(msg.id, e.target.value)}
-                onKeyDown={(e) => handleKeyPress(e, msg.id)}
-                autoFocus
-              />
-            ) : (
-              <>
-                <span style={{ padding: "8px", borderRadius: "10px", display: "inline-block", backgroundColor: msg.by === "user" ? "#dcf8c6" : "#f1f1f1", wordBreak: "break-word", maxWidth: "80%" }}>{msg.text}</span>
-                {msg.by === "user" && (
-                  <div style={{ display: "flex", justifyContent: "right", gap: "5px", marginTop: "4px", color: "grey" }}>
-                    <button onClick={() => deleteMessage(msg.id)} style={{ fontSize: "14px", cursor: "pointer", border: "none", background: "none", color: "grey" }}>🔄</button>
-                    <button onClick={() => setEditingMessage(msg.id)} style={{ fontSize: "14px", cursor: "pointer", border: "none", background: "none", color: "grey" }}>🖋️</button>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+          <div key={msg.id} style={msg.by === "user" ? styles.userMessageContainer : styles.botMessageContainer}>
+          {msg.by === "bot" && <img src="https://placehold.co/40x40" alt="Bot" style={styles.avatarSmall} />}
+        
+          {editingMessage === msg.id ? (
+            <input
+              type="text"
+              defaultValue={msg.text}
+              onBlur={(e) => editMessage(msg.id, e.target.value)}
+              onKeyDown={(e) => handleKeyPress(e, msg.id)}
+              autoFocus
+              style={{
+                ...styles.messageBubble,
+                backgroundColor: "#6a29ff",
+                color: "#fff",
+                border: "none", 
+                outline: "none",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                ...styles.messageBubble,
+                backgroundColor: msg.by === "user" ? "#6a29ff" : "#f1f1f1",
+                color: msg.by === "user" ? "#fff" : "#000",
+              }}
+            >
+              {msg.text}
+            </div>
+          )}
+        
+          {msg.by === "user" && (
+            <div style={styles.actions}>
+              <button onClick={() => deleteMessage(msg.id)} style={styles.actionButton}>🗑️</button>
+              <button onClick={() => setEditingMessage(msg.id)} style={styles.actionButton}>🖋️</button>
+            </div>
+          )}
+        </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div style={{
-        display: "flex", 
-        gap: "5px", 
-        padding: "10px", 
-        backgroundColor: "white",
-        position: "absolute", 
-        bottom: 0, 
-        left: 0, 
-        right: 0,
-        boxSizing: "border-box"
-      }}>
+
+      <div style={styles.inputContainer}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => handleKeyPress(e)}
           placeholder="Type a message..."
-          style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #ccc", boxSizing: "border-box" }}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          style={styles.inputField}
         />
-        <button onClick={sendMessage} style={{ padding: "10px", borderRadius: "5px", backgroundColor: "#007bff", color: "white", border: "none", cursor: "pointer", whiteSpace: "nowrap" }}>
+        <button
+          onClick={sendMessage}
+          disabled={!input.trim()}
+          style={{
+            ...styles.sendButton,
+            backgroundColor: input.trim() ? "#007bff" : "#ccc",
+          }}
+        >
           Send
         </button>
       </div>
     </div>
   );
+};
+
+const styles: { [key: string]: React.CSSProperties } = {
+  chatContainer: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    maxWidth: "400px",
+    padding: "10px",
+    backgroundColor: "white",
+    height: "500px",
+    boxSizing: "border-box",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    padding: "15px",
+    borderBottom: "1px solid #eee",
+    textAlign: "center",
+  },
+  avatar: {
+    width: "50px",
+    height: "50px",
+    borderRadius: "50%",
+  },
+  avatarSmall: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+  },
+  title: {
+    margin: 0,
+    fontSize: "16px",
+    fontWeight: "bold",
+  },
+  subtitle: {
+    margin: 0,
+    fontSize: "12px",
+    color: "#777",
+  },
+  messagesContainer: {
+    flexGrow: 1,
+    overflowY: "auto",
+    padding: "10px",
+  },
+  userMessageContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
+    marginBottom: "10px",
+  },
+  botMessageContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "10px",
+  },
+  messageBubble: {
+    padding: "10px",
+    borderRadius: "12px",
+    maxWidth: "70%",
+    wordBreak: "break-word",
+  },
+  actions: {
+    display: "flex",
+    gap: "5px",
+    marginTop: "5px",
+  },
+  actionButton: {
+    border: "none",
+    background: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  inputContainer: {
+    display: "flex",
+    gap: "5px",
+    padding: "10px",
+    borderTop: "1px solid #ddd",
+    backgroundColor: "#fff",
+  },
+  inputField: {
+    flex: 1,
+    padding: "10px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+  },
+  sendButton: {
+    padding: "10px 15px",
+    borderRadius: "5px",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+  },
 };
 
 export default ChatWidget;
