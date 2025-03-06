@@ -87,29 +87,32 @@ const App: React.FC = () => {
     >
       {user ? (
         <>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <h1>Welcome, {user.email}!</h1>
-          <button onClick={handleLogout} style={{ marginBottom: "10px", padding: "10px" }}>
+          <button onClick={handleLogout} style={{ padding: "8px 12px" }}>
             Logout
           </button>
-          <div
-            style={{
-              width: "100%",
-              maxWidth: "400px",
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "10px",
-              backgroundColor: "white",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              overflow: "hidden",
-            }}
-          >
-            {loading ? (
-              <p><LoadingIndicator /></p>
-            ) : (
-              <ChatWidget userId={user.uid} initialMessages={messages!} />
-            )}
-          </div>
-        </>
+        </div>
+      
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "400px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px",
+            backgroundColor: "white",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            overflow: "hidden",
+          }}
+        >
+          {loading ? (
+            <p><LoadingIndicator /></p>
+          ) : (
+            <ChatWidget userId={user.uid} initialMessages={messages!} />
+          )}
+        </div>
+      </>
       ) : (
         <>
           <h1>{isLogin ? "Login" : "Sign Up"}</h1>

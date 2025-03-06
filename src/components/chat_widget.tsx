@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { ChatWidgetProps, Message } from "../types/interface";
-import botAvatar from "../assets/avatar.png";
+import botAvatar from "../assets/botAvatar.png";
+import userAvatar from "../assets/userAvatar.png";
 
 const API_BASE_URL: string = process.env.REACT_APP_API_BASE_URL!;
 const API_SECRET_KEY: string = process.env.REACT_APP_API_SECRET_KEY!;
@@ -152,25 +153,35 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
         <div ref={messagesEndRef} />
       </div>
 
+    <div style={styles.bottomSection}>
       <div style={styles.inputContainer}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          style={styles.inputField}
-        />
-        <button
-          onClick={sendMessage}
-          disabled={!input.trim()}
-          style={{
-            ...styles.sendButton,
-            backgroundColor: input.trim() ? "#007bff" : "#ccc",
-          }}
-        >
-          Send
-        </button>
+        <div style={styles.inputWrapper}>
+          <img src={userAvatar} alt="user" style={styles.avatarSmall} />
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Your question"
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            style={styles.inputField}
+          />
+        </div>
+      </div>
+
+        <div style={styles.controls}>
+          <div style={styles.contextWrapper}>
+            <span style={styles.contextLabel}>Context</span>
+            <select style={styles.contextDropdown}>
+              <option>Onboarding</option>
+              <option>General</option>
+            </select>
+          </div>
+
+          <div style={styles.rightControls}>
+            <span style={styles.settingsIcon}>⚙️</span>
+            <span style={styles.sendIcon} onClick={sendMessage}>📤</span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -184,7 +195,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: "400px",
     padding: "10px",
     backgroundColor: "white",
-    height: "600px",
+    height: "650px",
     boxSizing: "border-box",
   },
   header: {
@@ -192,7 +203,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: "column",  
     alignItems: "center",     
     padding: "15px",
-    borderBottom: "1px solid #eee",
+   
     textAlign: "center",
     gap: "20px"
   },
@@ -252,7 +263,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   inputContainer: {
     display: "flex",
-    gap: "5px",
+    flexDirection: "column",
+    gap: "8px",
     padding: "10px",
     borderTop: "1px solid #ddd",
     backgroundColor: "#fff",
@@ -260,9 +272,11 @@ const styles: { [key: string]: React.CSSProperties } = {
   inputField: {
     flex: 1,
     padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
+    border: "none",
+    outline: "none",
     fontSize: "14px",
+    backgroundColor: "transparent", 
+    width: "100%",
   },
   sendButton: {
     padding: "10px 15px",
@@ -272,6 +286,50 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: "pointer",
     whiteSpace: "nowrap",
   },
+  controls: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: "8px",
+  },
+
+  rightControls: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+  
+  contextWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+
+  contextLabel: {
+    color: "#667085",
+    fontSize: "14px",
+    fontWeight: "400",
+  },
+  
+  contextDropdown: {
+    backgroundColor: "#F9FAFB",
+    border: "1px solid #E5E7EB",
+    borderRadius: "6px",
+    padding: "6px 12px",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#101828",
+    outline: "none",
+    cursor: "pointer",
+  },
+
+  inputWrapper: {
+    display: "flex",
+    alignItems: "center", 
+    gap: "8px",
+    paddingTop: "5px", 
+  },
 };
+
 
 export default ChatWidget;
