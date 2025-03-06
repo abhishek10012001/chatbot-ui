@@ -82,14 +82,13 @@ const App: React.FC = () => {
         justifyContent: "center",
         height: "100vh",
         backgroundColor: "#f4f4f4",
-        padding: "20px",
         boxSizing: "border-box",
       }}
     >
       {user ? (
         <>
           <h1>Welcome, {user.email}!</h1>
-          <button onClick={handleLogout} style={{ marginBottom: "20px", padding: "10px" }}>
+          <button onClick={handleLogout} style={{ marginBottom: "10px", padding: "10px" }}>
             Logout
           </button>
           <div

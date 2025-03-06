@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { ChatWidgetProps, Message } from "../types/interface";
+import botAvatar from "../assets/avatar.png";
 
 const API_BASE_URL: string = process.env.REACT_APP_API_BASE_URL!;
 const API_SECRET_KEY: string = process.env.REACT_APP_API_SECRET_KEY!;
@@ -101,7 +102,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
   return (
     <div style={styles.chatContainer}>
       <div style={styles.header}>
-        <img src="https://placehold.co/50x50" alt="Bot Avatar" style={styles.avatar} />
+      <img src={botAvatar} alt="Bot Avatar" style={styles.avatar} />
         <div>
           <h2 style={styles.title}>Hey 👋, I'm Ava</h2>
           <p style={styles.subtitle}>Ask me anything or pick a place to start</p>
@@ -111,7 +112,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
       <div style={styles.messagesContainer}>
         {messages.map((msg) => (
           <div key={msg.id} style={msg.by === "user" ? styles.userMessageContainer : styles.botMessageContainer}>
-          {msg.by === "bot" && <img src="https://placehold.co/40x40" alt="Bot" style={styles.avatarSmall} />}
+          {msg.by === "bot" && <img src={botAvatar} alt="Bot" style={styles.avatarSmall} />}
         
           {editingMessage === msg.id ? (
             <input
