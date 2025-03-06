@@ -6,6 +6,9 @@ import sendMessageIcon from "../assets/send_message.png";
 import editMessageIcon from "../assets/edit_message.png";
 import settingsIcon from "../assets/settings.png";
 import deleteIcon from "../assets/delete.png";
+import closeIcon from "../assets/close.png";
+import expandIcon from "../assets/expand.png";
+import splitScreen from "../assets/split_screen.png";
 import userAvatar from "../assets/user_avatar.png";
 
 const API_BASE_URL: string = process.env.REACT_APP_API_BASE_URL!;
@@ -107,7 +110,15 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
   return (
     <div style={styles.chatContainer}>
       <div style={styles.header}>
-      <img src={botAvatar} alt="Bot Avatar" style={styles.avatar} />
+        <div style={styles.topIconsContainer}>
+          <div style={styles.iconGroup}>
+            <span ><img src={expandIcon} alt="Expand" style={styles.topLeftIcon}/></span>
+            <span><img src={splitScreen} alt="SplitScreen" style={styles.topLeftIcon}/></span>
+          </div>
+          <span ><img src={closeIcon} alt="Close" style={styles.squareIcon}/></span>
+        </div>
+
+        <img src={botAvatar} alt="Bot Avatar" style={styles.avatar} />
         <div>
           <h2 style={styles.title}>Hey 👋, I'm Ava</h2>
           <p style={styles.subtitle}>Ask me anything or pick a place to start</p>
@@ -208,11 +219,22 @@ const styles: { [key: string]: React.CSSProperties } = {
   header: {
     display: "flex",
     flexDirection: "column",  
-    alignItems: "center",     
+    alignItems: "center",
     padding: "15px",
-   
+    borderBottom: "1px solid #eee",
     textAlign: "center",
-    gap: "20px"
+    gap: "20px",
+    position: "relative",
+  },
+  topIconsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    position: "absolute", 
+    top: "10px",  
+    left: "0",
+    width: "100%", 
+    boxSizing: "border-box",
   },
   avatar: {
     width: "50px",
@@ -232,6 +254,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   mediumIcon: {
     width: "24px",
     height: "20px",
+    borderRadius: "50%",
+  },
+  squareIcon: {
+    width: "14px",
+    height: "14px",
+    borderRadius: "50%",
+  },
+  topLeftIcon: {
+    width: "20px",
+    height: "24px",
     borderRadius: "50%",
   },
   title: {
