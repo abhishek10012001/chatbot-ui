@@ -1,5 +1,16 @@
 import React from "react";
 
+/**
+ * A simple loading indicator component that displays a spinning circle.
+ *
+ * This component is typically used to indicate loading states in the UI.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <LoadingIndicator />
+ * ```
+ */
 const LoadingIndicator: React.FC = () => (
   <div style={{
     display: "flex",

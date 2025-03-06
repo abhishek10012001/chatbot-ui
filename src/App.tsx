@@ -7,6 +7,28 @@ import LoadingIndicator from "./components/LoadingIndicator";
 import { Message } from "./types/interface";
 import "./App.css";
 
+/**
+ * The root component of the application.
+ *
+ * This component manages user authentication, handles login and registration,
+ * fetches user messages from Firestore, and renders the chat interface.
+ * It also provides logout functionality and displays a loading indicator when necessary.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered App component.
+ *
+ * @example
+ * ```tsx
+ * import React from "react";
+ * import App from "./App";
+ * 
+ * function Root() {
+ *   return <App />;
+ * }
+ * 
+ * export default Root;
+ * ```
+ */
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
@@ -30,6 +52,26 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  /**
+   * Fetches and stores the existing messages of the user from the Firestore database.
+   *
+   * Retrieves messages stored under the "Messages" collection for a given `userId`.
+   * If messages exist, they are formatted and sorted chronologically before updating the state.
+   * If no messages are found, an empty array is set.
+   *
+   * @async
+   * @function fetchMessages
+   * @param {string} userId - The unique identifier of the user whose messages are being fetched.
+   * @throws {Error} If the Firestore operation fails.
+   * @returns {Promise<void>} A promise that resolves when messages are successfully retrieved and stored.
+   *
+   * @example
+   * ```tsx
+   * useEffect(() => {
+   *   fetchMessages(user.uid);
+   * }, [user.uid]);
+   * ```
+   */
   const fetchMessages = async (userId: string) => {
     setLoading(true);
     const userDocRef = doc(db, "Messages", userId);
@@ -55,6 +97,24 @@ const App: React.FC = () => {
     setLoading(false);
   };
 
+  /**
+   * Handles user authentication.
+   *
+   * If `isLogin` is `true`, it signs in the user using Firebase Authentication with the provided email and password.
+   * Otherwise, it registers a new user account with the provided credentials.
+   *
+   * @async
+   * @function handleAuth
+   * @throws {Error} If authentication fails, an alert displays the error message.
+   * @returns {Promise<void>} A promise that resolves when the authentication process is complete.
+   *
+   * @example
+   * ```tsx
+   * <button onClick={handleAuth}>
+   *   {isLogin ? "Login" : "Register"}
+   * </button>
+   * ```
+   */
   const handleAuth = async () => {
     try {
       if (isLogin) {
@@ -67,6 +127,21 @@ const App: React.FC = () => {
     }
   };
 
+  /**
+   * Handles user logout.
+   *
+   * This function signs out the currently authenticated user using Firebase Authentication,
+   * resets the user state variables, clears chat messages, and stops any loading indicators.
+   *
+   * @async
+   * @function handleLogout
+   * @returns {Promise<void>} A promise that resolves when the user is successfully logged out.
+   *
+   * @example
+   * ```tsx
+   * <button onClick={handleLogout}>Logout</button>
+   * ```
+   */
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
