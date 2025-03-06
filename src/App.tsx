@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import ChatWidget from "./components/ChatWidget/ChatWidget";
 import LoadingIndicator from "./components/LoadingIndicator";
 import { Message } from "./types/interface";
+import "./App.css";
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -75,15 +76,7 @@ const App: React.FC = () => {
 
   return (
     <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        backgroundColor: "#f4f4f4",
-        boxSizing: "border-box",
-      }}
+      className="appContainer"
     >
       {user ? (
         <>
@@ -95,15 +88,7 @@ const App: React.FC = () => {
         </div>
       
         <div
-          style={{
-            width: "100%",
-            maxWidth: "400px",
-            borderRadius: "20px",
-            padding: "0", 
-            backgroundColor: "transparent",
-            boxShadow: "none",
-            overflow: "hidden",
-          }}
+          className="chatWidgetWrapper"
         >
           {loading ? (
             <p><LoadingIndicator /></p>
