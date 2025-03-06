@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { ChatWidgetProps, Message } from "../types/interface";
-import botAvatar from "../assets/botAvatar.png";
-import userAvatar from "../assets/userAvatar.png";
+import botAvatar from "../assets/bot_avatar.png";
+import sendMessageIcon from "../assets/send_message.png";
+import editMessageIcon from "../assets/edit_message.png";
+import settingsIcon from "../assets/settings.png";
+import deleteIcon from "../assets/delete.png";
+import userAvatar from "../assets/user_avatar.png";
 
 const API_BASE_URL: string = process.env.REACT_APP_API_BASE_URL!;
 const API_SECRET_KEY: string = process.env.REACT_APP_API_SECRET_KEY!;
@@ -144,8 +148,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
         
           {msg.by === "user" && (
             <div style={styles.actions}>
-              <button onClick={() => deleteMessage(msg.id)} style={styles.actionButton}>🗑️</button>
-              <button onClick={() => setEditingMessage(msg.id)} style={styles.actionButton}>🖋️</button>
+              <button onClick={() => deleteMessage(msg.id)} style={styles.actionButton}><img src={deleteIcon} alt="Delete" style={styles.smallIcon}/></button>
+              <button onClick={() => setEditingMessage(msg.id)} style={styles.actionButton}><img src={editMessageIcon} alt="Edit" style={styles.smallIcon}/></button>
             </div>
           )}
         </div>
@@ -156,7 +160,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
     <div style={styles.bottomSection}>
       <div style={styles.inputContainer}>
         <div style={styles.inputWrapper}>
-          <img src={userAvatar} alt="user" style={styles.avatarSmall} />
+          <img src={userAvatar} alt="User" style={styles.avatarSmall} />
           <input
             type="text"
             value={input}
@@ -178,8 +182,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ userId, initialMessages }) => {
           </div>
 
           <div style={styles.rightControls}>
-            <span style={styles.settingsIcon}>⚙️</span>
-            <span style={styles.sendIcon} onClick={sendMessage}>📤</span>
+            <span style={styles.settingsIcon}><img src={settingsIcon} alt="Settings" style={styles.mediumIcon}/></span>
+            <span style={styles.sendIcon} onClick={sendMessage}><img src={sendMessageIcon} alt="Send" style={styles.mediumIcon}/></span>
           </div>
         </div>
       </div>
@@ -217,6 +221,16 @@ const styles: { [key: string]: React.CSSProperties } = {
     height: "40px",
     borderRadius: "50%",
   },
+  smallIcon: {
+    width: "12px",
+    height: "12px",
+    borderRadius: "50%",
+  },
+  mediumIcon: {
+    width: "24px",
+    height: "20px",
+    borderRadius: "50%",
+  },
   title: {
     margin: 0,
     fontSize: "16px",
@@ -252,7 +266,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   actions: {
     display: "flex",
-    gap: "5px",
     marginTop: "5px",
   },
   actionButton: {
