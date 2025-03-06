@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { auth, db } from "./firebase_config";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import ChatWidget from "./components/ChatWidget";
+import ChatWidget from "./components/ChatWidget/ChatWidget";
 import LoadingIndicator from "./components/LoadingIndicator";
 import { Message } from "./types/interface";
 
