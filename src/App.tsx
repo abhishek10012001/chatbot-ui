@@ -98,11 +98,10 @@ const App: React.FC = () => {
           style={{
             width: "100%",
             maxWidth: "400px",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            padding: "10px",
-            backgroundColor: "white",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            borderRadius: "20px",
+            padding: "0", 
+            backgroundColor: "transparent",
+            boxShadow: "none",
             overflow: "hidden",
           }}
         >
@@ -111,7 +110,7 @@ const App: React.FC = () => {
           ) : (
             <ChatWidget userId={user.uid} initialMessages={messages!} />
           )}
-        </div>
+      </div>
       </>
       ) : (
         <>

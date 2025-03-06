@@ -201,6 +201,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: "white",
     height: "650px",
     boxSizing: "border-box",
+    borderRadius: "20px",
+    overflow: "hidden",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
   header: {
     display: "flex",
